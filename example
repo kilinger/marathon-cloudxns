@@ -1,0 +1,7 @@
+
+tsocks python marathon-cloudxns.py --sse -m http://username:password@ip:port -m http://username:password@ip:port  \
+-m http://username:password@ip:port --group external --cloudxns-domain example.com. --hosts x.x.x.x \
+--cloudxns-api-key api-key --cloudxns-secret-key secret-key
+
+tsocks python marathon-cloudxns.py --sse -m http://user:pwd@ip:port --group external --cloudxns-domain example.com. \
+--hosts x.x.x.x --cloudxns-api-key api-key --cloudxns-secret-key secret-key

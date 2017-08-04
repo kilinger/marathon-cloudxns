@@ -1,0 +1,36 @@
+#!/bin/sh
+
+MODE=$1; shift
+case "$MODE" in
+  poll)
+    [ -z "$POLL_INTERVAL" ] && POLL_INTERVAL=60
+    ;;
+  sse)
+    ARGS="--sse"
+    ;;
+  event)
+    URL=$1; shift
+    if [ -z "$URL" ] || echo "$URL" | grep -q '^-'; then
+      echo "$0 event callback-url [marathon-cloudxns.py args]" >&2
+      exit 1
+    fi
+    echo "Using $URL as event callback-url"
+    ARGS="-l :8080 -u '$URL'"
+    ;;
+  *)
+    echo "Unknown mode $MODE. Synopsis: $0 poll|sse|event [marathon-cloudxns.py args]" >&2
+    exit 1
+    ;;
+esac
+
+while true; do
+  python /marathon-cloudxns/marathon-cloudxns.py \
+    --syslog-socket /dev/null \
+    $ARGS $@ &
+  wait $! || exit $? # Needed for the traps to work
+  if [ "$MODE" != "poll" ]; then
+    exit 0
+  fi
+  sleep "$POLL_INTERVAL" &
+  wait $!
+done
